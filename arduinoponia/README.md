@@ -4,6 +4,7 @@
 ### **Resumen**
 El objetivo del taller es utilizar un Arduino UNO para medir la luz ambiente y la humedad en el sustrato de una planta, mostrar la información mediante una interfaz de usuario y automatizar un sistema de riego por goteo si la humedad cae por debajo de un umbral.
 
+![Imagen Ilustrativa](arduinoponia_bb.png "Imagen ilustrativa")
 
 ### **Elementos necesarios**
 Se tratara de utilizar elementos reciclados siempre que sea posible y se tratara de abaratar costos y enfocarse no en la exactitud del dispositivo, sino mas bien el uso de herramientas comunes que nos permitan conocer mas sobre los componentes y su funcionamiento. Como por ejemplo, al utilizar los clavos para medir la humedad de la tierra, estamos creando una resistencia variable, basada en la conductividad de la tierra, la cual es mayor cuando esta humeda, y menor cuando esta seca.
