@@ -6,7 +6,7 @@ int clockPin = 12;              // SHCP
 int latchPin = 8;               // STCP
 int buttonPin = 9;              // El boton para cambiar entre sensores
 int sensorSeleccionado = 0;     // El sensor actualmente seleccionado
-int buttonState = 0;            // Estado del boton
+int estadoDelBoton = 0;         // Estado del boton
 int nivelHumedad = 0;           // Nivel de humedad a mostrar X/3
 
 unsigned long masterTiempoInicial;      // Tiempo de inicio del contador Master
@@ -80,8 +80,8 @@ void loop() {
 
   // Si el timpo de retardo Master paso desde la ultima lectura
   if (masterTiempoActual - masterTiempoInicial >= masterTiempoRetardo) {
-    buttonState = digitalRead(buttonPin); // Chequeamos el estado del boton
-    if (buttonState == HIGH) {            // Si el boton esta presionado
+    estadoDelBoton = digitalRead(buttonPin); // Chequeamos el estado del boton
+    if (estadoDelBoton == HIGH) {            // Si el boton esta presionado
       Serial.print("[BOTOOOON] ");        // Logeamos un mensaje
       sensorSeleccionado = sensorSeleccionado+1;  // Seleccionamos el siguiente sensor.
       if (sensorSeleccionado > 2) {   // Como tenemos 3 sensores (0, 1 y 2) chequeamos que no se pase
@@ -116,4 +116,3 @@ void loop() {
     sensorTiempoInicial = sensorTiempoActual; // actualizamos el contador de tiempo.
   }
 }
-
