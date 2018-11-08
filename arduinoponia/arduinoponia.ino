@@ -4,7 +4,7 @@ int numeroDeShiftRegisters = 1; // Cantidad de shiftRegisters conectados en seri
 int serialDataPin = 11;         // DS
 int clockPin = 12;              // SHCP
 int latchPin = 8;               // STCP
-int buttonPin = 9;              // El boton para cambiar entre sensores
+int pinDelBoton = 9;              // El boton para cambiar entre sensores
 int sensorSeleccionado = 0;     // El sensor actualmente seleccionado
 int estadoDelBoton = 0;         // Estado del boton
 int nivelHumedad = 0;           // Nivel de humedad a mostrar X/3
@@ -32,7 +32,7 @@ void setup() {
   pinMode(0, INPUT);              // Sensor Humedad N° 1
   pinMode(1, INPUT);              // Sensor Humedad N° 2
   pinMode(2, INPUT);              // Sensor Humedad N° 3
-  pinMode(buttonPin, INPUT);      // Boton seleccion sensor
+  pinMode(pinDelBoton, INPUT);      // Boton seleccion sensor
   #define VALOR_HUMEDAD_MIN 300   // Valor minimo para la lectura de la humedad.
   #define VALOR_HUMEDAD_MAX 800   // Valor maximo para la lectura de la humedad.
 }
@@ -80,7 +80,7 @@ void loop() {
 
   // Si el timpo de retardo Master paso desde la ultima lectura
   if (masterTiempoActual - masterTiempoInicial >= masterTiempoRetardo) {
-    estadoDelBoton = digitalRead(buttonPin); // Chequeamos el estado del boton
+    estadoDelBoton = digitalRead(pinDelBoton); // Chequeamos el estado del boton
     if (estadoDelBoton == HIGH) {            // Si el boton esta presionado
       Serial.print("[BOTOOOON] ");        // Logeamos un mensaje
       sensorSeleccionado = sensorSeleccionado+1;  // Seleccionamos el siguiente sensor.
