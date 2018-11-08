@@ -1,95 +1,119 @@
 #include <ShiftRegister74HC595.h>
 
-int numberOfShiftRegisters = 1; // number of shift registers attached in series
-int serialDataPin = 11; // DS
-int clockPin = 12; // SHCP
-int latchPin = 8; // STCP
-int buttonPin = 9;     // the number of the pushbutton pin
-int selectedSensor = 0;
-int buttonState = 0;         // variable for reading the pushbutton status
+int numeroDeShiftRegisters = 1; // Cantidad de shiftRegisters conectados en serie.
+int serialDataPin = 11;         // DS
+int clockPin = 12;              // SHCP
+int latchPin = 8;               // STCP
+int buttonPin = 9;              // El boton para cambiar entre sensores
+int sensorSeleccionado = 0;     // El sensor actualmente seleccionado
+int buttonState = 0;            // Estado del boton
+int nivelHumedad = 0;           // Nivel de humedad a mostrar X/3
 
-unsigned long masterStartMillis;  //some global variables available anywhere in the program
-unsigned long uiStartMillis;  //some global variables available anywhere in the program
-unsigned long sensorStartMillis;  //some global variables available anywhere in the program
-unsigned long blinkStartMillis;  //some global variables available anywhere in the program
+unsigned long masterTiempoInicial;      // Tiempo de inicio del contador Master
+unsigned long uiTiempoInicial;          // Tiempo de inicio del contador UI
+unsigned long sensorTiempoInicial;      // Tiempo de inicio del contador Sensores
+unsigned long parpadearTiempoInicial;   // Tiempo de inicio del contador Parpadeo Leds
 
-unsigned long masterCurrentMillis;
-unsigned long uiCurrentMillis;
-unsigned long sensorCurrentMillis;
-unsigned long blinkCurrentMillis;
+unsigned long masterTiempoActual;     // Tiempo actual del contador Master
+unsigned long uiTiempoActual;         // Tiempo actual del contador UI
+unsigned long sensorTiempoActual;     // Tiempo actual del contador Sensores
+unsigned long parpadearTiempoActual;  // Tiempo actual del contador Parpadeo Leds
 
-const unsigned long masterCoolDown = 100;  //the value is a number of milliseconds
-const unsigned long uiRefreshCoolDown = 1000;  //the value is a number of milliseconds
-const unsigned long sensorsCoolDown = 10000;  //the value is a number of milliseconds
-const unsigned long blinkCoolDown = 1000;  //the value is a number of milliseconds
-ShiftRegister74HC595 sr (numberOfShiftRegisters, serialDataPin, clockPin, latchPin);
+const unsigned long masterTiempoRetardo = 100;    // Duracion de intervalo Master
+const unsigned long uiTiempoRetardo = 1000;       // Duracion de intervalo UI
+const unsigned long sensorTiempoRetardo = 1000;   // Duracion de intervalo Sensores
+const unsigned long parpadearTiempoRetardo = 500; // Duracion de intervalo Parpadeo Leds
 
-int nivelHumedadS0 = 0;
+// Inicializamos el/los shiftRegisters
+ShiftRegister74HC595 sr (numeroDeShiftRegisters, serialDataPin, clockPin, latchPin);
 
 void setup() {
-  Serial.begin(9600);
-  pinMode(0, INPUT);
-  pinMode(1, INPUT);
-  pinMode(2, INPUT);
-  pinMode(buttonPin, INPUT);
-  #define PHOTOCELL_MIN 300 // Minimum reading from Photocell
-  #define PHOTOCELL_MAX 880 // Maximum reading from Photocell
+  Serial.begin(9600);             // Para debuggear
+  pinMode(0, INPUT);              // Sensor Humedad N° 1
+  pinMode(1, INPUT);              // Sensor Humedad N° 2
+  pinMode(2, INPUT);              // Sensor Humedad N° 3
+  pinMode(buttonPin, INPUT);      // Boton seleccion sensor
+  #define VALOR_HUMEDAD_MIN 300   // Valor minimo para la lectura de la humedad.
+  #define VALOR_HUMEDAD_MAX 800   // Valor maximo para la lectura de la humedad.
 }
 
-void drawHumedad(int nivelHumedad) {
-  for (int i = 0; i <= 4; i++) {
+// dibujarHumedad:
+// Recibe el nivel de humedad (x/3)
+// Hace un for para apagar los leds del shiftRegister en posicion 0 1 y 2.
+// Luego prende el led correspondiente para representar el nivel de humedad.
+void dibujarHumedad(int nivelHumedad) {
+  for (int i = 0; i <= 2; i++) {
     sr.set(i, LOW);
   }
   sr.set(nivelHumedad, HIGH);
 }
 
-
-void clearSensorLeds() {
-  for (int i = 5; i <= 7; i++) {
+// limpiarLedsSensores:
+// Apaga los leds 3, 4 y 5, que son los que usamos para mostrar el sensor seleccionado.
+// TODO: Hacer que esta funcion sea reutilizable y usarla en dibujarHumedad.
+void limpiarLedsSensores() {
+  for (int i = 3; i <= 5; i++) {
     sr.set(i, LOW);
   }
 }
 
-void blinkALed(int led) {
-  blinkCurrentMillis = millis();
-  if (blinkCurrentMillis - blinkStartMillis >= blinkCoolDown) {
-    sr.set(5+led, !sr.get(5+led));
-    blinkStartMillis = blinkCurrentMillis;  //IMPORTANT to save the start time of the current LED state.
+// parpadearLed: Recibe el N° led
+// Guarda el tiempo actual, lo compara contra el tiempo inicial del contador de parpadeo.
+// Si el resultado es menor al tiempo de retardo, prendemos/apagamos el led
+// Y actualizamos el parpadearTiempoInicial.
+void parpadearLed(int led) {
+  parpadearTiempoActual = millis();
+  if (parpadearTiempoActual - parpadearTiempoInicial >= parpadearTiempoRetardo) {
+    sr.set(3+led, !sr.get(3+led));
+    parpadearTiempoInicial = parpadearTiempoActual; // Actualizamos el contador de tiempo
   }
 }
 
 
 void loop() {
-  uiCurrentMillis = millis();
-  sensorCurrentMillis = millis();
-  masterCurrentMillis = millis();
+  // Guardamos el tiempo actual en milisegundos en cada contador
+  uiTiempoActual = millis();
+  sensorTiempoActual = millis();
+  masterTiempoActual = millis();
 
-  blinkALed(selectedSensor);
+  parpadearLed(sensorSeleccionado); // Parpadeamos el led del sensor seleccionado.
 
-  if (masterCurrentMillis - masterStartMillis >= masterCoolDown) {
-    buttonState = digitalRead(buttonPin);
-    if (buttonState == HIGH) {
-      selectedSensor = selectedSensor+1;
-      if (selectedSensor > 2) {
-        selectedSensor = 0;
+  // Si el timpo de retardo Master paso desde la ultima lectura
+  if (masterTiempoActual - masterTiempoInicial >= masterTiempoRetardo) {
+    buttonState = digitalRead(buttonPin); // Chequeamos el estado del boton
+    if (buttonState == HIGH) {            // Si el boton esta presionado
+      Serial.print("[BOTOOOON] ");        // Logeamos un mensaje
+      sensorSeleccionado = sensorSeleccionado+1;  // Seleccionamos el siguiente sensor.
+      if (sensorSeleccionado > 2) {   // Como tenemos 3 sensores (0, 1 y 2) chequeamos que no se pase
+        sensorSeleccionado = 0;       // Si se pasa de 2, vuelve a 0.
       }
-      clearSensorLeds();
+      Serial.print(sensorSeleccionado); // Logeamos el sensor seleccionado.
+      limpiarLedsSensores();       // Limpiamos los LEDS de los sensores.
     }
-    masterStartMillis = masterCurrentMillis;
+    masterTiempoInicial = masterTiempoActual; // Actualizamos el contador de tiempo
   }
 
-  if (uiCurrentMillis - uiStartMillis >= uiRefreshCoolDown) {
-    Serial.println("UI REFRESH");
-    drawHumedad(nivelHumedadS0);
-    uiStartMillis = uiCurrentMillis;
+  // Si el timpo de retardo UI paso desde la ultima lectura
+  if (uiTiempoActual - uiTiempoInicial >= uiTiempoRetardo) {
+    Serial.println("UI REFRESH");     // Logeamos un mensaje
+    dibujarHumedad(nivelHumedad);     // Dibujamos el nivel de humedad
+    uiTiempoInicial = uiTiempoActual; // actualizamos el contador de tiempo.
   }
 
-  if (sensorCurrentMillis - sensorStartMillis >= sensorsCoolDown) {
-    Serial.println("SENSOR REFRESH");
-    Serial.println(selectedSensor);
-    nivelHumedadS0 = map( constrain(analogRead(selectedSensor), PHOTOCELL_MIN, PHOTOCELL_MAX) , PHOTOCELL_MIN, PHOTOCELL_MAX, 0, 4);
-    Serial.println(nivelHumedadS0);
-    sensorStartMillis = sensorCurrentMillis;
+  // Si el timpo de retardo Sensor paso desde la ultima lectura
+  if (sensorTiempoActual - sensorTiempoInicial >= sensorTiempoRetardo) {
+    Serial.print("[SENSOR REFRESH] Sensor #"); // Logeamos un mensaje
+    Serial.print(sensorSeleccionado);          // Mostrando el sensor seleccionado
+    Serial.print(" value: ");
+    // A continuacion vamos a hacer varias cosas
+    // Vamos a hacer a leer el sensor analogico seleccionado.
+    // Hacemos un constrain para restringir la lectura del sensor.
+    // Le decimos cual es el valor minimo y maximo que queremos obtener
+    // Luego mapeamos el valor medido a un rango del 0 al 2
+    // 0, 1 y 2 son los leds que indican la medicion del sensor (x/3)
+    nivelHumedad = map( constrain(analogRead(sensorSeleccionado), VALOR_HUMEDAD_MIN, VALOR_HUMEDAD_MAX) , VALOR_HUMEDAD_MIN, VALOR_HUMEDAD_MAX, 0, 2);
+    Serial.println(analogRead(sensorSeleccionado));
+    sensorTiempoInicial = sensorTiempoActual; // actualizamos el contador de tiempo.
   }
-  sr.set(0, HIGH);
 }
+
