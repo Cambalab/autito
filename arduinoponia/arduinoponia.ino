@@ -4,25 +4,32 @@ int numeroDeShiftRegisters = 1; // Cantidad de shiftRegisters conectados en seri
 int serialDataPin = 11;         // DS
 int clockPin = 12;              // SHCP
 int latchPin = 8;               // STCP
-int pinDelBoton = 9;              // El boton para cambiar entre sensores
+int buttonPin = 9;              // El boton para cambiar entre sensores
 int sensorSeleccionado = 0;     // El sensor actualmente seleccionado
-int estadoDelBoton = 0;         // Estado del boton
+int buttonState = 0;            // Estado del boton
 int nivelHumedad = 0;           // Nivel de humedad a mostrar X/3
+int valorHumedad = 0;           // Valor analogico sensado
+int umbralHumedad = 300;        // Nivel de humedad a mostrar X/3
+int bombaAguaPin = 7;           // La bomba de agua
 
 unsigned long masterTiempoInicial;      // Tiempo de inicio del contador Master
 unsigned long uiTiempoInicial;          // Tiempo de inicio del contador UI
 unsigned long sensorTiempoInicial;      // Tiempo de inicio del contador Sensores
 unsigned long parpadearTiempoInicial;   // Tiempo de inicio del contador Parpadeo Leds
+unsigned long riegoTiempoInicial;       // Tiempo de inicio del contador de Riego
 
 unsigned long masterTiempoActual;     // Tiempo actual del contador Master
 unsigned long uiTiempoActual;         // Tiempo actual del contador UI
 unsigned long sensorTiempoActual;     // Tiempo actual del contador Sensores
 unsigned long parpadearTiempoActual;  // Tiempo actual del contador Parpadeo Leds
+unsigned long riegoTiempoActual;       // Tiempo de actual del contador de Riego
 
-const unsigned long masterTiempoRetardo = 100;    // Duracion de intervalo Master
+const unsigned long masterTiempoRetardo = 1000;    // Duracion de intervalo Master
 const unsigned long uiTiempoRetardo = 1000;       // Duracion de intervalo UI
 const unsigned long sensorTiempoRetardo = 1000;   // Duracion de intervalo Sensores
 const unsigned long parpadearTiempoRetardo = 500; // Duracion de intervalo Parpadeo Leds
+const unsigned long riegoTiempoRetardo = 500;       // Tiempo de actual del contador de Riego
+
 
 // Inicializamos el/los shiftRegisters
 ShiftRegister74HC595 sr (numeroDeShiftRegisters, serialDataPin, clockPin, latchPin);
@@ -32,7 +39,8 @@ void setup() {
   pinMode(0, INPUT);              // Sensor Humedad N° 1
   pinMode(1, INPUT);              // Sensor Humedad N° 2
   pinMode(2, INPUT);              // Sensor Humedad N° 3
-  pinMode(pinDelBoton, INPUT);      // Boton seleccion sensor
+  pinMode(buttonPin, INPUT);      // Boton seleccion sensor
+  pinMode(bombaAguaPin, OUTPUT);  // Para activar la bomba de agua.
   #define VALOR_HUMEDAD_MIN 300   // Valor minimo para la lectura de la humedad.
   #define VALOR_HUMEDAD_MAX 800   // Valor maximo para la lectura de la humedad.
 }
@@ -70,6 +78,31 @@ void parpadearLed(int led) {
 }
 
 
+void activarRiego() {
+  riegoTiempoActual = millis();
+  if (riegoTiempoActual - riegoTiempoInicial >= riegoTiempoRetardo) {
+    digitalWrite(bombaAguaPin, HIGH);
+    Serial.println("ACTIVAR RIEGO");     // Logeamos un mensaje
+    Serial.println("ACTIVAR RIEGO");     // Logeamos un mensaje
+    Serial.println("ACTIVAR RIEGO");     // Logeamos un mensaje
+    Serial.println("ACTIVAR RIEGO");     // Logeamos un mensaje
+    Serial.println("ACTIVAR RIEGO");     // Logeamos un mensaje
+    riegoTiempoInicial = riegoTiempoActual; // Actualizamos el contador de tiempo
+  }
+}
+
+void controlarUmbralHumedad(int valorHumedad) {
+  Serial.println("controlarUmbralHumedad");     // Logeamos un mensaje
+  Serial.println(valorHumedad);     // Logeamos un mensaje
+  Serial.println("controlarUmbralHumedad");     // Logeamos un mensaje
+  if (valorHumedad <= umbralHumedad) {
+    activarRiego();
+  } else {
+    Serial.println("PARAR RIEGO");     // Logeamos un mensaje
+    digitalWrite(bombaAguaPin, LOW);
+  }
+}
+
 void loop() {
   // Guardamos el tiempo actual en milisegundos en cada contador
   uiTiempoActual = millis();
@@ -80,8 +113,8 @@ void loop() {
 
   // Si el timpo de retardo Master paso desde la ultima lectura
   if (masterTiempoActual - masterTiempoInicial >= masterTiempoRetardo) {
-    estadoDelBoton = digitalRead(pinDelBoton); // Chequeamos el estado del boton
-    if (estadoDelBoton == HIGH) {            // Si el boton esta presionado
+    buttonState = digitalRead(buttonPin); // Chequeamos el estado del boton
+    if (buttonState == HIGH) {            // Si el boton esta presionado
       Serial.print("[BOTOOOON] ");        // Logeamos un mensaje
       sensorSeleccionado = sensorSeleccionado+1;  // Seleccionamos el siguiente sensor.
       if (sensorSeleccionado > 2) {   // Como tenemos 3 sensores (0, 1 y 2) chequeamos que no se pase
@@ -111,8 +144,11 @@ void loop() {
     // Le decimos cual es el valor minimo y maximo que queremos obtener
     // Luego mapeamos el valor medido a un rango del 0 al 2
     // 0, 1 y 2 son los leds que indican la medicion del sensor (x/3)
-    nivelHumedad = map( constrain(analogRead(sensorSeleccionado), VALOR_HUMEDAD_MIN, VALOR_HUMEDAD_MAX) , VALOR_HUMEDAD_MIN, VALOR_HUMEDAD_MAX, 0, 2);
+    valorHumedad = analogRead(sensorSeleccionado);
+    nivelHumedad = map( constrain(valorHumedad, VALOR_HUMEDAD_MIN, VALOR_HUMEDAD_MAX) , VALOR_HUMEDAD_MIN, VALOR_HUMEDAD_MAX, 0, 2);
     Serial.println(analogRead(sensorSeleccionado));
+    controlarUmbralHumedad(valorHumedad); // Chequeamos si hay que activar la bomba de agua.
     sensorTiempoInicial = sensorTiempoActual; // actualizamos el contador de tiempo.
   }
 }
+
