@@ -2,7 +2,11 @@
 
 ![Logo Hacklab](logo_v3.png)
 
-![Logo Hacklab](logo_camba.png)
+## Wiki
+https://gitlab.camba.coop/unq/hacklab/wikis/home
+
+## Board
+https://gitlab.camba.coop/unq/hacklab/boards
 
 ## Contenido
 - LTC
