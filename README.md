@@ -12,3 +12,4 @@ https://gitlab.camba.coop/unq/hacklab/boards
 - LTC
 - CNC
 - Arduinoponia
+- Vehículo controlado con Arduino
