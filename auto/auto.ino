@@ -7,7 +7,7 @@ int sonar_data = 0;
 int masterTiempoActual = 0;
 int masterTiempoInicial = 0;
 int masterTiempoRetardo = 1000;
-
+int mirandoDerecha = false;
 int accionTiempoActual = 0;
 int accionTiempoInicial = 0;
 
@@ -29,53 +29,40 @@ void setup() {
 }
 
 void girar_izquierda(int delayTime) {
-  accionTiempoActual = millis();
-  if (accionTiempoActual - accionTiempoInicial >= delayTime) {
-    Serial.println("girar_izquierda");
-    motor_izq.run(FORWARD);
-    motor_der.run(RELEASE);
-    accionTiempoInicial = accionTiempoActual;
-  }
+  Serial.println("girar_izquierda");
+  mirandoDerecha = false;
+  motor_izq.run(FORWARD);
+  motor_der.run(RELEASE);
+  delay(delayTime);
 }
 
 void girar_derecha(int delayTime) {
-  accionTiempoActual = millis();
-  if (accionTiempoActual - accionTiempoInicial >= delayTime) {
-    Serial.println("girar_derecha");
-    motor_izq.run(RELEASE);
-    motor_der.run(FORWARD);
-    accionTiempoInicial = accionTiempoActual;
-  }
+  Serial.println("girar_derecha");
+  mirandoDerecha = true;
+  motor_izq.run(RELEASE);
+  motor_der.run(FORWARD);
+  delay(delayTime);
 }
 
 void avanzar(int delayTime) {
-  accionTiempoActual = millis();
-  if (accionTiempoActual - accionTiempoInicial >= delayTime) {
-    Serial.println("avanzar");
-    motor_izq.run(BACKWARD);
-    motor_der.run(FORWARD);
-    accionTiempoInicial = accionTiempoActual;
-  }
+  Serial.println("avanzar");
+  motor_izq.run(BACKWARD);
+  motor_der.run(FORWARD);
+  delay(delayTime);
 }
 
 void retroceder(int delayTime) {
-  accionTiempoActual = millis();
-  if (accionTiempoActual - accionTiempoInicial >= delayTime) {
-    Serial.println("retroceder");
-    motor_izq.run(FORWARD);
-    motor_der.run(BACKWARD);
-    accionTiempoInicial = accionTiempoActual;
-  }
+  Serial.println("retroceder");
+  motor_izq.run(FORWARD);
+  motor_der.run(BACKWARD);
+  delay(delayTime);
 }
 
 void parar(int delayTime) {
-  accionTiempoActual = millis();
-  if (accionTiempoActual - accionTiempoInicial >= delayTime) {
-    Serial.println("parar");
-    motor_izq.run(RELEASE);
-    motor_der.run(RELEASE);
-    accionTiempoInicial = accionTiempoActual;
-  }
+  Serial.println("parar");
+  motor_izq.run(RELEASE);
+  motor_der.run(RELEASE);
+  delay(delayTime);
 }
 
 bool camino_despejado() { // TRUE = camino libre
@@ -99,14 +86,19 @@ void buscar_salida() {
 }
 
 void loop() {
-  masterTiempoActual = millis();
-  if (masterTiempoActual - masterTiempoInicial >= masterTiempoRetardo) {
-    if(camino_despejado()) {
-      avanzar(600);  
+  if(camino_despejado()) {
+      avanzar(500);  
     } else {
-      buscar_salida();
-      parar(600);
+      parar(1000);
+      retroceder(1000);
+      parar(1000);
+      if (mirandoDerecha) {
+        girar_izquierda(500);
+        parar(1000);
+      } else {
+        girar_derecha(500);
+        parar(1000);
     }
-    masterTiempoInicial = masterTiempoActual;
+    parar(2000);
   }
 }
