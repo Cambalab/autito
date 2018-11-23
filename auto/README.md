@@ -7,18 +7,27 @@ El objetivo del taller es hacer un vehiculo utilizando Arduino, 2 motores de cor
 ![Imagen Ilustrativa](arduinoponia_bb.png "Imagen ilustrativa")
 
 ### **Elementos necesarios**
-- Arduino UNO
-- Shield L239
 
-**Medidor de Humedad del sustrato: **
-- Clavos, preferentemente galvanizados, para evitar que se oxiden.
+### Lista de materiales
+
+- [ ] [2 motores con sus respectivas ruedas](https://electronica.mercadolibre.com.ar/componentes-electronicos/arduino/motor-con-rueda-arduino)
+- [ ] [1 Arduino Uno](https://listado.mercadolibre.com.ar/arduino-uno#D[A:arduino%20uno])
+- [ ] [ 1 Shield Motor L293](https://listado.mercadolibre.com.ar/shield-motor-l293#D[A:shield%20motor%20l293])
+- [ ] [1 Sensor HC-SR04](https://listado.mercadolibre.com.ar/hc-sr04#D[A:hc%20sr04])
+- [ ] [1 jack de Bateria 9v para arduino](https://listado.mercadolibre.com.ar/jack-de-bateria-arduino#D[A:jack%20de%20bateria%20arduino])
+- [ ]["Rueda Loca"](https://articulo.mercadolibre.com.ar/MLA-647108487-rueda-loca-arduino-_JM?quantity=1)
+- [ ] [Base-"Chasis" del auto](assets/baseMadera.jpg)
+- [ ] [4 Cables "Hembra-Macho" pin](assets/cableMH.jpg)
+- [ ] [4 Cables  para conectar el motor con el shield]()
+
+##### Documentación
+* [Libreria HC-SR04](https://bitbucket.org/teckel12/arduino-new-ping/wiki/Home)
+* [Libreria Motor](https://learn.adafruit.com/adafruit-motor-shield/af-dcmotor-class)
 
 
-**Sistema de riego por goteo:**
-- Botella de agua o un tetrabrick a modo de tanque de agua.
-- Mangueras de plastica de 6mm de diametro externo y 4mm interno.
-- Conecciones de 3 vias (tambien de acuario gg)
-- Pistola de calor para sellar la union de la manguera con el tanque.
+
+**A**
+
 
 **Interfaz de usuario:**
 
