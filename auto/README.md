@@ -25,10 +25,6 @@ El objetivo del taller es hacer un vehiculo utilizando Arduino, 2 motores de cor
 * [Libreria Motor](https://learn.adafruit.com/adafruit-motor-shield/af-dcmotor-class)
 
 
-
-**A**
-
-
 **Problemas detectados:**
 Un motor se mueve mas rapido que el otro, por lo tanto el vehiculo no se desplaza en linea recta y se mueve en diagonal.
 Esto tambien nos dificulta saber cuantos milisegundos necesitamos dejar girar el motor para avanzar una determinada distancia en centimetros.
@@ -37,5 +33,12 @@ Para el problema de los motores a distinta velocidad, se nos ocurren dos cosas:
 - Utilizar diferentes velocidades en cada motor para balancearlos.
 - Vimos que otros proyectos utiliar un delay entre el motor mas rapido y el mas lento para compensar.
 
+Otro problema encontrado es que a veces el sensor de ultrasonido devuelve ceros. El problema se explica en mayor profundidad en este [ISSUE](https://github.com/purduesigbots/pros/issues/32). Por eso en el metodo caminoDespejado() filtramos los ceros.
+
+**Variantes y mejoras:**
+- Añadir diferentes sensores (Luz, sonido, etc) y utilizarlos para que el auto responda a distintos estimulos.
+- Añadir otro sensor de ultrasonido para la parte trasera del auto y hacer que el frontal gire para cubrir el frente y sus laterales.
+
 ### **Links utiles**
 https://playground.arduino.cc/Code/NewPing
+https://www.arduino.cc/en/Reference/Servo
