@@ -29,15 +29,13 @@ El objetivo del taller es hacer un vehiculo utilizando Arduino, 2 motores de cor
 **A**
 
 
-**Interfaz de usuario:**
+**Problemas detectados:**
+Un motor se mueve mas rapido que el otro, por lo tanto el vehiculo no se desplaza en linea recta y se mueve en diagonal.
+Esto tambien nos dificulta saber cuantos milisegundos necesitamos dejar girar el motor para avanzar una determinada distancia en centimetros.
 
-- **3 leds Amarillos** representan la lista de los *sensores disponibles*. El led apagado indica que el sensor esta desconectado. El led encendido indica que el sensor esta conectado y el led titilante indica que el sensor esta *seleccionado*.
-- **3 leds Verdes** representan el *valor actual* que esta midiendo el *sensor seleccionado* en una medida de 0 a 100%.
-- **1 leds azules** representa el *Actuador*, de igual manera que los sensores, titilara para indicar que ese *esta Activo*.
-- **1 boton** nos permitira *seleccionar* los diferentes sensores.
-- **1 shift-registers (74HC595)** nos permitira utilizar unos pocos pines del arduino para controlar todos los leds.
-- **7 resistencias de 470ohm** para protejer los leds.
-- **1 resistencias de 1Kohm** para protejer los leds.
+Para el problema de los motores a distinta velocidad, se nos ocurren dos cosas:
+- Utilizar diferentes velocidades en cada motor para balancearlos.
+- Vimos que otros proyectos utiliar un delay entre el motor mas rapido y el mas lento para compensar.
 
 ### **Links utiles**
 https://playground.arduino.cc/Code/NewPing
