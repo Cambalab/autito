@@ -4,8 +4,11 @@
 ### **Resumen**
 El objetivo del taller es hacer un vehiculo utilizando Arduino, 2 motores de corriente continua, un shield para controlar los motores y un sensor de ultrasonido.
 
-![robot_1](fotos/roboto_1.jpg)
-![robot_2](fotos/roboto_2.jpg)
+![Imagen Ilustrativa](recursos/hacklab_auto.png "Imagen ilustrativa")
+
+![Variante con servo](fotos/roboto_video_1.gif "Variante con servo")
+
+
 ### **Elementos necesarios**
 
 ### Lista de materiales
@@ -25,19 +28,22 @@ El objetivo del taller es hacer un vehiculo utilizando Arduino, 2 motores de cor
 * [Libreria Motor](https://learn.adafruit.com/adafruit-motor-shield/af-dcmotor-class)
 
 
+##### **Problemas detectados:**
+Un motor se mueve mas rapido que el otro, por lo tanto el vehiculo no se desplaza en linea recta y se mueve en diagonal.
+Esto tambien nos dificulta saber cuantos milisegundos necesitamos dejar girar el motor para avanzar una determinada distancia en centimetros.
 
-**Modelo Fritzing**
-![](recursos/hacklab_auto.png)
+Para el problema de los motores a distinta velocidad, se nos ocurren dos cosas:
+- Utilizar diferentes velocidades en cada motor para balancearlos.
+- Vimos que otros proyectos utiliar un delay entre el motor mas rapido y el mas lento para compensar.
+- El problema tambien puede estar causado por la bateria de 9v utilizada para alimentar el circuito.
 
+Otro problema encontrado es que a veces el sensor de ultrasonido devuelve ceros. El problema se explica en mayor profundidad en este [ISSUE](https://github.com/purduesigbots/pros/issues/32). Por eso en el metodo caminoDespejado() filtramos los ceros.
 
+##### **Variantes y mejoras:**
+- Añadir diferentes sensores (Luz, sonido, etc) y utilizarlos para que el auto responda a distintos estimulos.
+- Añadir otro sensor de ultrasonido para la parte trasera del auto y hacer que el frontal gire para cubrir el frente y sus laterales.
 
-### **Links utiles**
-+ https://playground.arduino.cc/Code/NewPing
-+ https://www.luisllamas.es/tipos-motores-rotativos-proyectos-arduino/
-
-### **Otros proyectos  para seguir investigando **
-
-* https://www.codemahal.com/video/building-an-arduino-robotic-car/
-* https://create.arduino.cc/projecthub/adam/obstacle-avoiding-car-a192d9
-+ https://www.instructables.com/id/Simple-RC-Car-Arduino-Nano-HC-05/
-+ https://www.electronicshub.org/arduino-line-follower-robot/
+#####  **Links utiles**
+- https://playground.arduino.cc/Code/NewPing  
+- https://www.arduino.cc/en/Reference/Servo  
+- [Motor Shield V1.x FAQ](https://forums.adafruit.com/viewtopic.php?f=31&t=26873)
