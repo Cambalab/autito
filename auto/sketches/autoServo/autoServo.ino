@@ -3,26 +3,24 @@
 #include <NewPing.h>
 #include <Servo.h>
 
-
-int velocidad = 0;
-int sonarData = 0;
-int mirandoDerecha = false;
-int mirandoAtras = false;
-int pos = 0;    // Posicion del Servo
+int sonar_data = 0; // Esta variable guardara el valor de sensado del ultrasonido.
+int mirandoDerecha = false; // Usamos esta variable para recordar en que direccion giro el robot por ultima vez.
+int mirandoAtras = false; // Usamos esta variable para recordar en que direccion el robot esta mirando.
+int pos = 0;    // Guarda la posicion del Servo
 int sonarUmbral = 40; // en centimetros
 
-// Crea el objeto Motor y selecciona el 'puerto' ('port' en inglés) M1, M2, M3 or M4. En este caso, M1
+// Creamos los objetos Motor_izq y Motor_der y selecciona el 'puerto' ('port' en inglés) M1, M2, M3 or M4. En este caso, M1 y M3
 AF_DCMotor motorIzq(1);
 AF_DCMotor motorDer(3);
-NewPing sonar(A0, A1, 200);
-Servo myservo;  // Creamos un objeto servo
+NewPing sonar(A0, A1, 200); // Creamos un objeto sonar.
+Servo myservo;  // Creamos un objeto servo.
 
 void setup() {
   Serial.begin(9600);
   // Definimos la velocidad para el motor
   motorIzq.setSpeed(70);
   motorDer.setSpeed(110);
- // Prendemos el motor
+ // Prendemos los motores
   motorIzq.run(RELEASE);
   motorDer.run(RELEASE);
 
@@ -94,7 +92,7 @@ bool caminoDespejado() { // TRUE = camino libre
         Serial.println("caminoDespejado");
         return true;
       } else {
-        Serial.println("XXX camino_bloqueado");
+        Serial.println("camino_bloqueado");
         return false;
       }
     } else {
